@@ -1,0 +1,21 @@
+/* font-family: "CirceRounded"; */
+@font-face {
+	font-family: "CirceRounded";
+	src: url("./assets/fonts/CirceRounded/CirceRounded.eot");
+	src: url("./assets/fonts/CirceRounded/CirceRounded.eot?#iefix")format("embedded-opentype"),
+	url("./assets/fonts/CirceRounded/CirceRounded.woff") format("woff"),
+	url("./assets/fonts/CirceRounded/CirceRounded.otf") format("opentype");
+	font-style: normal;
+	font-weight: normal;
+    }
+
+    /* font-family: "CirceRoundedLight"; */
+@font-face {
+	font-family: "CirceRoundedLight";
+	src: url("./assets/fonts/CirceRoundedLight/CirceRoundedLight.eot");
+	src: url("./assets/fonts/CirceRoundedLight/CirceRoundedLight.eot?#iefix")format("embedded-opentype"),
+	url("./assets/fonts/CirceRoundedLight/CirceRoundedLight.woff") format("woff"),
+	url("./assets/fonts/CirceRoundedLight/CirceRoundedLight.otf") format("opentype");
+	font-style: normal;
+	font-weight: normal;
+    }

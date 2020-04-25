@@ -1,0 +1,58 @@
+@import '../../layouts/_vars'
+	
+.Playlist
+	margin: 50px 0
+
+	&__item
+		$item: &
+		display: flex
+		justify-content: space-between
+		align-items: center
+		padding: 15px 30px
+		box-sizing: border-box
+		margin-bottom: 10px
+		border-radius: 4px
+		background-color: #fff
+		font: 16px $regular
+		color: $black
+		cursor: pointer
+		transition: box-shadow .2s
+
+		&:hover
+			box-shadow: 0 4px 9px 0 rgba(32, 33, 36, .03)
+
+			#{$item}-options
+				opacity: 1
+				pointer-events: auto
+
+		&-left, &-right
+			display: flex
+			align-items: center
+
+		&-left
+			span
+				margin-right: 15px
+				color: $gray
+				font-size: 14px
+
+		&-options
+			display: flex
+			align-items: center
+			margin-right: 30px
+			opacity: 0
+			pointer-events: none
+			font: 14px $regular
+			transition: opacity .2s
+			a
+				svg
+					width: 15px
+					height: auto
+					fill: $gray
+					transition: fill .2s
+				&:hover
+					svg
+						fill: $black
+
+		&--active
+			box-shadow: 0 4px 9px 0 rgba(32, 33, 36, .03)
+			color: $red

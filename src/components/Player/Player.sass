@@ -1,0 +1,245 @@
+@import '../../layouts/_vars'
+
+.Player
+	$player: &
+	position: relative
+	height: auto
+	min-height: 90px
+	overflow: hidden
+
+	&__container
+		width: 97%
+		max-width: 1170px
+		margin: 0 auto
+
+	&__title
+		position: absolute
+		left: 50%
+		top: 0
+		transform: translateX(-50%)
+
+	&__options
+		position: absolute
+		width: 100%
+		bottom: 0
+		box-sizing: border-box
+
+
+
+	.Player__volume
+		width: 15%
+		display: flex
+		justify-content: flex-end
+		position: relative
+		display: flex
+		align-items: center
+
+		.volume-moved
+			position: absolute
+			top: 50%
+			transform: translateY(-50%)
+			background-color: $violet
+			height: 10px
+			border-radius: 3px
+			pointer-events: none
+
+		.volume 
+			-webkit-appearance: none
+			width: 70px
+			height: 3px
+			outline: none
+			border-radius: 3px
+			margin: 0
+			cursor: pointer
+			background-color: rgba(32, 33, 36, .1)
+
+		.volume::-webkit-slider-thumb
+			-webkit-appearance: none
+			width: 7px
+			height: 7px
+			background-color: $violet
+			border-radius: 50%
+			opacity: 0
+
+
+
+
+		
+	&__range 
+		width: 100%
+		position: relative
+		display: flex
+		justify-content: center
+		align-items: center
+
+		.volume, .load, .progress, .bar
+			border-radius: 3px
+			height: 3px
+
+		.range
+			position: relative
+			display: flex
+			width: 100%
+			height: 9px
+			cursor: pointer
+			overflow: hidden
+
+		.volume, .bar 
+			background-color: rgba(32, 33, 36, .1)
+
+		.load, .progress, .bar
+			left: 0
+			top: 3px
+			position: absolute
+			&::after
+				content: ''
+				padding-top: 4px
+
+		.bar
+			width: 100%
+		
+		.load
+			background-color: rgba(32, 33, 36, .15)
+
+		.progress
+			background-color: $violet
+
+		.time-hint
+			position: absolute
+			top: -35px
+			left: 0
+			pointer-events: none
+			display: none
+			padding: 5px
+			transform: translateX(-50%)
+			border-radius: 3px
+			background-color: #fff
+			color: $violet
+
+			&::after
+				position: absolute
+				bottom: -60%
+				left: 50%
+				transform: translateX(-50%)
+				content: ''
+				border: 10px solid transparent
+				border-top: 10px solid #fff
+			
+		
+
+
+	&__controls, &__controls-left, &__controls-right
+		display: flex
+		justify-content: space-between
+		align-items: center
+
+	&__controls
+		height: 81px
+
+	&__btn
+		display: flex
+		cursor: pointer
+		padding: 5px
+		box-sizing: border-box
+		margin-right: 30px
+		&:last-child
+			margin-right: 0
+
+		&:hover
+			svg
+				fill: $violet
+
+		svg
+			width: 15px
+			height: auto
+			fill: $black
+			transition: fill .2s
+
+	&__mute
+		svg
+			width: 24px
+
+	&__fullscreen
+		svg
+			width: 18px
+
+	&__title, &__duration
+		color: $black
+
+	&__title
+		font: 16px $regular
+
+	&__duration
+		font: 14px $regular
+
+
+
+	&__display
+		display: flex
+		background-color: $gray
+		video
+			width: 100%
+			min-height: 600px
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	&--audio
+
+	&--video
+		&:hover
+			#{$player}__options
+				bottom: 0
+			#{$player}__title
+				top: 0
+			
+		#{$player}__btn
+			svg
+				fill: white
+
+			&:hover
+				svg
+					fill: $violet
+
+		#{$player}__title
+			top: -70px
+			width: 100%
+			padding: 30px 0 20px
+			background: linear-gradient(to bottom, rgba(32,32,36,.15) 0%, rgba(255,255,255,0) 90%)
+			font: 16px $light
+			letter-spacing: .25px
+			color: white
+			transition: top .2s
+
+		#{$player}__options
+			padding: 0 40px
+			bottom: -90px
+			background: linear-gradient(to top, rgba(32,32,36,.5) 0%, rgba(255,255,255,0) 90%)
+			transition: bottom .2s
+
+		#{$player}__volume
+			margin-right: 30px
+
+			.volume
+				background-color: rgba(255, 255, 255, .1)
+
+		#{$player}__duration
+			color: white
+			font-family: $light
+
+		#{$player}__range 
+			.volume, .bar 
+				background-color: rgba(255, 255, 255, .1)
+
+			.load
+				background-color: rgba(255, 255, 255, .15)

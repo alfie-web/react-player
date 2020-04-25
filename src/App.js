@@ -1,26 +1,54 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
 
+import Player from './components/Player';
+
+const MOCKVIDEO = [
+	{
+		_id: '1',
+		url: 'https://res.cloudinary.com/dkbqvhh7f/video/upload/v1587624470/player/bg_jtawby.mp4',
+		title: 'Промо ролик какой-то',
+		duration: 133,
+		poster: ''
+	},
+	{
+		_id: '2',
+		url: 'https://res.cloudinary.com/dkbqvhh7f/video/upload/v1587623677/player/Detroit-_Become_Human_Markus_final_song_Everything_will_be_alright_cbzztz.mp4',
+		title: 'Everything will be allright',
+		duration: 172,
+		poster: ''
+	},
+];
+
+const MOCKAUDIO = [
+	{
+		_id: '1',
+		url: 'https://res.cloudinary.com/dkbqvhh7f/video/upload/v1587622967/player/brad_paisley_-_find_yourself_ost_tachki__zv.fm_epk71g.mp3',
+		title: 'Brad Paisley - Find Yourself',
+		duration: 251,
+		poster: ''
+	},
+	{
+		_id: '2',
+		url: 'https://res.cloudinary.com/dkbqvhh7f/video/upload/v1587622914/player/Syd_Matters_-_Obstacles_yyfkpu.mp3',
+		title: 'Syd Matters - Obstacles',
+		duration: 208,
+		poster: ''
+	},
+];
+
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+	return (
+		<div className="App">
+			<Player 
+				playlist={MOCKVIDEO}
+			/>
+			{/* <Player 
+				isAudio
+				playlist={MOCKAUDIO}
+			/> */}
+		</div>
+	);
 }
 
 export default App;
