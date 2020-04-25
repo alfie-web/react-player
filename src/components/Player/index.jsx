@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import classNames from 'classnames';
 import './Player.sass';
 
@@ -6,9 +6,7 @@ import { PlayerTitle, Playlist } from '../';
 
 export default function Player({ isAudio, playlist, className }) {
 	const [playerState, setPlayerState] = useState({
-		// currentVideo: {},
-		// currentAudio: {},
-		currentMedia: {},
+		currentMedia: {},	// Возможно придется отделить эту штуку в отдельный useState
 		// currentDuration: null,
 		currentVolume: 1,
 
@@ -20,6 +18,8 @@ export default function Player({ isAudio, playlist, className }) {
 		isFullscreen: false	// Возможно вынесем в отдельный стэйт
 	})
 
+	const mediaRef = useRef();
+
 	const setState = (newProps) => {
 		setPlayerState({
 			...playerState,
@@ -30,13 +30,80 @@ export default function Player({ isAudio, playlist, className }) {
 	// Выбираю активный медиафайл
 	const setCurrentMedia = media => {
 		setState({
-			currentMedia: media
+			currentMedia: media,
+			isPlaying: false
 		})
+		mediaRef.current.load();	// Если завыпендривается, то вынесем в useEffect
+		console.log('LOADED')
+	}
+
+
+	const setWaiting = () => {
+		console.log('WAITING')
+		setState({
+			isLoaded: false
+		})
+	}
+
+	const setReadyToPlay = () => {
+		console.log('READY TO PLAY')
+		if (!playerState.isLoaded) {
+			setState({
+				isLoaded: true
+			})
+		}
+	}
+
+	const play = () => {
+		if (!playerState.isPlaying && playerState.isLoaded) {
+			console.log('play');
+			mediaRef.current.play()
+				.then(() => {
+					setState({
+						isPlaying: true
+					})
+				})
+		}
+	}
+
+	const pause = () => {
+		if (playerState.isPlaying) {
+			console.log('pause');
+			mediaRef.current.pause();
+			setState({
+				isPlaying: false
+			})
+		}
+	}
+
+	const playPause = () => {
+		if (playerState.isPlaying) {
+			pause();
+		} else {
+			play();
+		}
 	}
 
 
 
+	// useEffect(() => {
+	// 	mediaRef.current.load();
+	// 	console.log('LOADED')
+	// 	// play()
+	// }, [playerState.currentMedia])
 
+	useEffect(() => {
+		// TODO: Когда происходит это событие, нужно блокировать playlist, так как вылезет ошибка. (По сути формально файл загружается, но мы нарушаем загрузку меняя url файла)
+		let ref = mediaRef.current;
+		ref.addEventListener('waiting', setWaiting);
+		return () => ref.removeEventListener('waiting', setWaiting);
+	})
+
+	useEffect(() => {
+		let ref = mediaRef.current;
+		ref.addEventListener('canplay', setReadyToPlay);	// playing
+		return () => ref.removeEventListener('canplay', setReadyToPlay);
+	})
 
 
 	// TODO: Может всё-таки разделить вёрстку на 2 компонента Audio и Video
@@ -48,9 +115,9 @@ export default function Player({ isAudio, playlist, className }) {
 				<PlayerTitle title={playerState.currentMedia.title || 'Название медиа'} />
 
 				{ isAudio 
-					? <audio src={playerState.currentAudio}></audio>
+					? <audio ref={mediaRef} src={playerState.currentMedia.url || ''}></audio>
 					: <div className="Player__display">
-						<video src={playerState.currentVideo}></video>
+						<video ref={mediaRef} src={playerState.currentMedia.url || ''}></video>
 						<div className="Player__overlay"></div>
 					</div>
 				}
@@ -69,7 +136,11 @@ export default function Player({ isAudio, playlist, className }) {
 
 					<div className="Player__controls">
 						<div className="Player__controls-left">
-							<div className="Player__play Player__btn" title={ !playerState.isPlaying ? 'Проигрывать' : 'Остановить' }>
+							<div 
+								className="Player__play Player__btn" 
+								title={ !playerState.isPlaying ? 'Проигрывать' : 'Остановить' }
+								onClick={playPause}
+							>
 								{ !playerState.isPlaying ? <svg viewBox="0 0 16 18" xmlns="http://www.w3.org/2000/svg">
 									<path fillRule="evenodd" clipRule="evenodd" d="M13 8.99994L2.5 2.93777L2.5 15.0621L13 8.99994ZM15.5 9.86597C16.1667 9.48107 16.1667 8.51882 15.5 8.13392L2 0.339689C1.33333 -0.045211 0.500002 0.435916 0.500002 1.20572L0.500001 16.7942C0.500001 17.564 1.33334 18.0451 2 17.6602L15.5 9.86597Z"/>
 								</svg>
