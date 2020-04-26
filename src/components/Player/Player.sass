@@ -4,7 +4,7 @@
 	$player: &
 	position: relative
 	height: auto
-	min-height: 90px
+	min-height: 80px
 	overflow: hidden
 
 	&__container
@@ -27,12 +27,11 @@
 
 
 	.Player__volume
-		width: 15%
-		display: flex
-		justify-content: flex-end
 		position: relative
 		display: flex
+		justify-content: flex-end
 		align-items: center
+		width: 15%
 
 		.volume-moved
 			position: absolute
@@ -71,8 +70,10 @@
 		display: flex
 		justify-content: center
 		align-items: center
+		z-index: 10
 
 		.volume, .load, .progress, .bar
+			// display: inline-block
 			border-radius: 3px
 			height: 3px
 
@@ -88,9 +89,10 @@
 			background-color: rgba(32, 33, 36, .1)
 
 		.load, .progress, .bar
+			position: absolute
 			left: 0
 			top: 3px
-			position: absolute
+			pointer-events: none
 			&::after
 				content: ''
 				padding-top: 4px
@@ -99,9 +101,12 @@
 			width: 100%
 		
 		.load
+			// pointer-events: none
 			background-color: rgba(32, 33, 36, .15)
 
 		.progress
+			// pointer-events: none
+			z-index: 10
 			background-color: $violet
 
 		.time-hint
@@ -134,7 +139,8 @@
 		align-items: center
 
 	&__controls
-		height: 81px
+		height: 71px
+		margin-top: -3px
 
 	&__btn
 		display: flex
@@ -156,6 +162,7 @@
 			transition: fill .2s
 
 	&__mute
+		// margin-right: 15px
 		svg
 			width: 24px
 
@@ -224,13 +231,14 @@
 
 		#{$player}__options
 			padding: 0 40px
-			bottom: -90px
+			bottom: -80px
 			background: linear-gradient(to top, rgba(32,32,36,.5) 0%, rgba(255,255,255,0) 90%)
 			transition: bottom .2s
 
-		#{$player}__volume
-			margin-right: 30px
+		#{$player}__fullscreen
+			margin-left: 30px
 
+		#{$player}__volume
 			.volume
 				background-color: rgba(255, 255, 255, .1)
 

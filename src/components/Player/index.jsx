@@ -4,6 +4,7 @@ import './Player.sass';
 
 import { PlayerTitle, Playlist } from '../';
 
+
 export default function Player({ isAudio, playlist, className }) {
 	const [playerState, setPlayerState] = useState({
 		currentMedia: {},	// Возможно придется отделить эту штуку в отдельный useState
@@ -19,6 +20,10 @@ export default function Player({ isAudio, playlist, className }) {
 	})
 
 	const mediaRef = useRef();
+	const timeRef = useRef();
+	const progressRef = useRef();
+	const loadRef = useRef();
+	const barRef = useRef();
 
 	const setState = (newProps) => {
 		setPlayerState({
@@ -26,6 +31,23 @@ export default function Player({ isAudio, playlist, className }) {
 			...newProps
 		}) 
 	}
+
+	// console.log('RERENDER')
+
+
+	const addNull = num => {
+		return num >= 0 && num <= 9 ? '0' + num : num;
+	}
+	const timeToFormat = duration => {
+		duration = Math.floor(parseInt(duration));
+		var hours = Math.floor(duration / 3600);
+		duration %= 3600;
+		var minutes = Math.floor(duration / 60);
+		var seconds = duration % 60;
+
+		return `${hours !== 0 ? addNull(hours) + ':' : ''}${addNull(minutes)}:${addNull(seconds)}`;
+	}
+
 
 	// Выбираю активный медиафайл
 	const setCurrentMedia = media => {
@@ -84,13 +106,57 @@ export default function Player({ isAudio, playlist, className }) {
 		}
 	}
 
+	const onTimeUpdate = () => {
+		let currentTime = mediaRef.current.currentTime;
+		const duration = playerState.currentMedia.duration;
+
+		timeRef.current.textContent = timeToFormat(currentTime);
+
+		// let progress = ((duration + currentTime) * 100 / duration) - 100;
+		let progress = (currentTime / duration) * 100;
+		progressRef.current.style.width = progress + '%';
+
+		// Скорее бедет в отдельном useEffect событие ended
+		// if (currentTime >= fakeDuration || audioRef.current.ended) {
+		// 	handleEnd();
+		// }
+	}
+
+	const onProgress = (e) => {
+		// if (e.target.buffered.length > 0) {	// Без этого buffered почемуто выдаёт ошибку
+		if (e.target.buffered.length) {	// Без этого buffered почемуто выдаёт ошибку
+			let loadedTime = e.target.buffered.end(e.target.buffered.length - 1);		// Когда я перематываю на позицию больше текущего буфера, создаётся новый 2 и тд 3,4 ...
+			const duration = playerState.currentMedia.duration;
+			console.log('progress', loadedTime, e.target.buffered.length);
+		
+			let progress = (loadedTime / duration) * 100;
+			loadRef.current.style.width = progress + '%';
+		}
+	}
 
 
-	// useEffect(() => {
-	// 	mediaRef.current.load();
-	// 	console.log('LOADED')
-	// 	// play()
-	// }, [playerState.currentMedia])
+	// TODO: Сделать метод универсальным, 
+	// чтобы принимал параметром время на которое перемотать, а если не передали, то значит на range выбрали
+	const onRewind = (e) => {
+		if (playerState.isLoaded) {
+			console.log('rewind')
+			const dur = playerState.currentMedia.duration;
+			const w = barRef.current.clientWidth;
+			let x = e.offsetX === undefined ? e.layerX : e.offsetX;
+			let xproc = (x * 100) / w;
+			let sec = (xproc * dur) / 100;
+
+			mediaRef.current.currentTime = sec;
+		}
+	}
+
+	// const onMediaSeeked = e => {
+		// console.log(;seeked)
+	// }
+
+
+
+
 
 	useEffect(() => {
 		// TODO: Когда происходит это событие, нужно блокировать playlist, так как вылезет ошибка. (По сути формально файл загружается, но мы нарушаем загрузку меняя url файла)
@@ -104,6 +170,35 @@ export default function Player({ isAudio, playlist, className }) {
 		ref.addEventListener('canplay', setReadyToPlay);	// playing
 		return () => ref.removeEventListener('canplay', setReadyToPlay);
 	})
+
+	useEffect(() => {
+		const ref = mediaRef.current;
+		ref.addEventListener('timeupdate', onTimeUpdate);
+		return () => ref.removeEventListener('timeupdate', onTimeUpdate);
+	})
+
+	useEffect(() => {
+		const ref = mediaRef.current;
+		ref.addEventListener('progress', onProgress);
+		return () => ref.removeEventListener('progress', onProgress);
+	})
+
+	// useEffect(() => {
+	// 	const ref = mediaRef.current;
+	// 	ref.addEventListener('seeked', onMediaSeeked);		// По факту событие запустится, когда мы изменим позици воспроизведения
+	// 	return () => ref.removeEventListener('seeked', onMediaSeeked);
+	// })
+
+	
+
+
+
+	useEffect(() => {
+		const ref = barRef.current;
+		ref.addEventListener('click', onRewind);
+		return () => ref.removeEventListener('click', onRewind);
+	})
+	
 
 
 	// TODO: Может всё-таки разделить вёрстку на 2 компонента Audio и Video
@@ -126,11 +221,11 @@ export default function Player({ isAudio, playlist, className }) {
 				{/* Возможно повыносить всё на отдельные компоненты */}
 				<div className="Player__options">
 					<div className="Player__range">
-						<div className="range">
+						<div className="range" ref={barRef}>
 							<div className="time-hint">00:00</div>
 							<div className="bar"></div>
-							<div className="progress"></div>
-							<div className="load"></div>
+							<div ref={progressRef} className="progress"></div>
+							<div ref={loadRef} className="load"></div>
 						</div>
 					</div>
 
@@ -160,7 +255,7 @@ export default function Player({ isAudio, playlist, className }) {
 									<path fillRule="evenodd" clipRule="evenodd" d="M13.3333 7.03774V1.05555C13.3333 0.595311 13.7064 0.222215 14.1667 0.222215C14.6269 0.222215 15 0.595312 15 1.05555V14.9444C15 15.4047 14.6269 15.7778 14.1667 15.7778C13.7064 15.7778 13.3333 15.4047 13.3333 14.9444V8.96224L1.5 15.7942C0.833334 16.1791 0 15.698 0 14.9282V1.07179C0 0.301989 0.833334 -0.179137 1.5 0.205764L13.3333 7.03774ZM11 7.99999L2 2.80384L2 13.1961L11 7.99999Z"/>
 								</svg>
 							</div>
-							<div className="Player__duration">00:00/{ playerState.currentMedia.duration || '00:00' }</div>
+							<div className="Player__duration"><span ref={timeRef}>00:00</span>/{ playerState.currentMedia.duration ? timeToFormat(playerState.currentMedia.duration) : '00:00' }</div>
 						</div>
 
 						<div className="Player__controls-right">

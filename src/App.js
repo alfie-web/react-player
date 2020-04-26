@@ -20,22 +20,22 @@ const MOCKVIDEO = [
 	},
 ];
 
-const MOCKAUDIO = [
-	{
-		_id: '1',
-		url: 'https://res.cloudinary.com/dkbqvhh7f/video/upload/v1587622967/player/brad_paisley_-_find_yourself_ost_tachki__zv.fm_epk71g.mp3',
-		title: 'Brad Paisley - Find Yourself',
-		duration: 251,
-		poster: ''
-	},
-	{
-		_id: '2',
-		url: 'https://res.cloudinary.com/dkbqvhh7f/video/upload/v1587622914/player/Syd_Matters_-_Obstacles_yyfkpu.mp3',
-		title: 'Syd Matters - Obstacles',
-		duration: 208,
-		poster: ''
-	},
-];
+// const MOCKAUDIO = [
+// 	{
+// 		_id: '1',
+// 		url: 'https://res.cloudinary.com/dkbqvhh7f/video/upload/v1587622967/player/brad_paisley_-_find_yourself_ost_tachki__zv.fm_epk71g.mp3',
+// 		title: 'Brad Paisley - Find Yourself',
+// 		duration: 251,
+// 		poster: ''
+// 	},
+// 	{
+// 		_id: '2',
+// 		url: 'https://res.cloudinary.com/dkbqvhh7f/video/upload/v1587622914/player/Syd_Matters_-_Obstacles_yyfkpu.mp3',
+// 		title: 'Syd Matters - Obstacles',
+// 		duration: 208,
+// 		poster: ''
+// 	},
+// ];
 
 function App() {
 	return (
