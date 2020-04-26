@@ -239,7 +239,7 @@ export default function Player({ isAudio, playlist, className }) {
 					<div className="Player__range">
 						<div ref={hintRef} className="time-hint"></div>
 						<div className="range" ref={barRef}>
-							<div className="bar"></div>
+							<div className={classNames('bar', { 'bar--waiting': !playerState.isLoaded })}></div>
 							<div ref={progressRef} className="progress"></div>
 							<div ref={loadRef} className="load"></div>
 						</div>

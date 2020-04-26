@@ -1,5 +1,12 @@
 @import '../../layouts/_vars'
 
+@keyframes waiting
+	0%
+		background-position: 0 0
+	100% 
+		background-position: 35px 35px
+	
+
 .Player
 	$player: &
 	position: relative
@@ -103,9 +110,12 @@
 
 		.bar
 			width: 100%
-		
+
+			&--waiting
+				background-image: linear-gradient(-45deg,rgba(113, 78, 215,1) 25%,transparent 25%,transparent 50%,rgba(113, 78, 215,1) 50%,rgba(113, 78, 215,1) 75%,transparent 75%,transparent)
+				background-size: 35px 35px
+				animation: waiting 2s linear infinite
 		.load
-			// pointer-events: none
 			background-color: rgba(32, 33, 36, .15)
 
 		.progress
