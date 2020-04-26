@@ -24,6 +24,7 @@ export default function Player({ isAudio, playlist, className }) {
 	const progressRef = useRef();
 	const loadRef = useRef();
 	const barRef = useRef();
+	const hintRef = useRef();
 
 	const setState = (newProps) => {
 		setPlayerState({
@@ -137,22 +138,31 @@ export default function Player({ isAudio, playlist, className }) {
 
 	// TODO: Сделать метод универсальным, 
 	// чтобы принимал параметром время на которое перемотать, а если не передали, то значит на range выбрали
+	const makeRewindCalculation = (e) => {
+		const dur = playerState.currentMedia.duration;
+		const w = barRef.current.clientWidth;
+		let x = e.offsetX === undefined ? e.layerX : e.offsetX;		// В пикселях
+		let xproc = (x * 100) / w;	// В процентах
+		let sec = (xproc * dur) / 100;
+
+		return [sec, xproc];
+	}
+
 	const onRewind = (e) => {
 		if (playerState.isLoaded) {
 			console.log('rewind')
-			const dur = playerState.currentMedia.duration;
-			const w = barRef.current.clientWidth;
-			let x = e.offsetX === undefined ? e.layerX : e.offsetX;
-			let xproc = (x * 100) / w;
-			let sec = (xproc * dur) / 100;
+			const [sec] = makeRewindCalculation(e);
 
 			mediaRef.current.currentTime = sec;
 		}
 	}
 
-	// const onMediaSeeked = e => {
-		// console.log(;seeked)
-	// }
+	const showTimeHint = (e) => {
+		const [sec, xproc] = makeRewindCalculation(e);
+
+		hintRef.current.style.left = xproc + '%';
+		hintRef.current.textContent = sec ? timeToFormat(sec) : '00:00';
+	}
 
 
 
@@ -198,6 +208,12 @@ export default function Player({ isAudio, playlist, className }) {
 		ref.addEventListener('click', onRewind);
 		return () => ref.removeEventListener('click', onRewind);
 	})
+
+	useEffect(() => {
+		const ref = barRef.current;
+		ref.addEventListener('mousemove', showTimeHint);
+		return () => ref.removeEventListener('mousemove', showTimeHint);
+	})
 	
 
 
@@ -221,8 +237,8 @@ export default function Player({ isAudio, playlist, className }) {
 				{/* Возможно повыносить всё на отдельные компоненты */}
 				<div className="Player__options">
 					<div className="Player__range">
+						<div ref={hintRef} className="time-hint"></div>
 						<div className="range" ref={barRef}>
-							<div className="time-hint">00:00</div>
 							<div className="bar"></div>
 							<div ref={progressRef} className="progress"></div>
 							<div ref={loadRef} className="load"></div>

@@ -72,6 +72,10 @@
 		align-items: center
 		z-index: 10
 
+		&:hover
+			.time-hint
+				display: inline-block
+
 		.volume, .load, .progress, .bar
 			// display: inline-block
 			border-radius: 3px
@@ -115,20 +119,22 @@
 			left: 0
 			pointer-events: none
 			display: none
-			padding: 5px
+			padding: 3px 7px
 			transform: translateX(-50%)
 			border-radius: 3px
 			background-color: #fff
 			color: $violet
+			z-index: 10
+			font: 14px $regular
 
 			&::after
 				position: absolute
-				bottom: -60%
+				bottom: -40%
 				left: 50%
 				transform: translateX(-50%)
 				content: ''
-				border: 10px solid transparent
-				border-top: 10px solid #fff
+				border: 5px solid transparent
+				border-top: 5px solid #fff
 			
 		
 
