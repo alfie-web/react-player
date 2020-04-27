@@ -32,7 +32,7 @@ export default function Player({ isAudio, playlist, className }) {
 		isLoaded: false,
 		isPlaying: false,
 		isLooped: false,
-		isEnded: false,
+		// isEnded: false,
 		// isMuted: false,
 		// isFullscreen: false	// Возможно вынесем в отдельный стэйт
 	})
@@ -68,18 +68,6 @@ export default function Player({ isAudio, playlist, className }) {
 		console.log('LOADED')
 	}
 
-	// const prevNextHandler = way => {
-	// 	const curIndex = playlist.findIndex((el) => el._id === playerState.currentMedia._id);
-
-	// 	if (way === 'next') {
-	// 		if (curIndex + 1 !== playlist.length - 1) {
-	// 			return setCurrentMedia(playlist[0]);
-	// 		}
-	// 		setCurrentMedia(playlist[curIndex + 1]);
-	// 	} else if (way === 'prev') {
-
-	// 	}
-	// }
 
 
 	const prevNextHandler = way => {
@@ -109,10 +97,13 @@ export default function Player({ isAudio, playlist, className }) {
 				isLoaded: true
 			})
 		}
+
+		if (!playerState.isPlaying) play();
 	}
 
 	const play = () => {
-		if (!playerState.isPlaying && playerState.isLoaded) {
+		// if (!playerState.isPlaying && playerState.isLoaded) {
+		if (playerState.isLoaded) {
 			console.log('play');
 			mediaRef.current.play()
 				.then(() => {
@@ -141,20 +132,33 @@ export default function Player({ isAudio, playlist, className }) {
 		}
 	}
 
+	const handleEnd = () => {
+		setState({ isPlaying: false });
+
+		console.log('END')
+		if (playerState.isLooped) {
+			play();
+		} else {
+			prevNextHandler(1);
+			// play();
+		}
+	}
+
+
+
 	const onTimeUpdate = () => {
 		let currentTime = mediaRef.current.currentTime;
 		const duration = playerState.currentMedia.duration;
 
 		timeRef.current.textContent = timeToFormat(currentTime);
 
-		// let progress = ((duration + currentTime) * 100 / duration) - 100;
 		let progress = (currentTime / duration) * 100;
 		progressRef.current.style.width = progress + '%';
 
 		// Скорее бедет в отдельном useEffect событие ended
-		// if (currentTime >= fakeDuration || audioRef.current.ended) {
-		// 	handleEnd();
-		// }
+		if (mediaRef.current.ended) {
+			handleEnd();
+		}
 	}
 
 	const onProgress = (e) => {
@@ -317,6 +321,13 @@ export default function Player({ isAudio, playlist, className }) {
 									<path fillRule="evenodd" clipRule="evenodd" d="M13.3333 7.03774V1.05555C13.3333 0.595311 13.7064 0.222215 14.1667 0.222215C14.6269 0.222215 15 0.595312 15 1.05555V14.9444C15 15.4047 14.6269 15.7778 14.1667 15.7778C13.7064 15.7778 13.3333 15.4047 13.3333 14.9444V8.96224L1.5 15.7942C0.833334 16.1791 0 15.698 0 14.9282V1.07179C0 0.301989 0.833334 -0.179137 1.5 0.205764L13.3333 7.03774ZM11 7.99999L2 2.80384L2 13.1961L11 7.99999Z"/>
 								</svg>
 							</div>
+							<div className={classNames('Player__loop Player__btn', {'Player__btn--active': playerState.isLooped})} title="Зациклить" onClick={() => setState({ isLooped: !playerState.isLooped })}>
+								<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+									<path d="M19.4603 7.52466C19.0355 7.28678 18.5174 7.37516 18.1921 7.70708C17.1697 3.71757 13.5439 0.759888 9.24011 0.759888C4.1451 0.759888 0 4.90499 0 10C0 15.095 4.1451 19.2401 9.24011 19.2401C11.4657 19.2401 13.6159 18.4375 15.2947 16.9802C15.7347 16.5982 15.7818 15.9318 15.3998 15.4918C15.0178 15.0518 14.3515 15.0047 13.9114 15.3866C12.6164 16.5108 10.9575 17.1298 9.24011 17.1298C5.3087 17.1298 2.11022 13.9314 2.11022 9.99995C2.11022 6.06853 5.3087 2.87011 9.24011 2.87011C12.3948 2.87011 15.0771 4.92978 16.014 7.77488C15.6581 7.59057 15.2127 7.6173 14.8768 7.881C14.4185 8.24089 14.3387 8.90415 14.6986 9.36245L16.443 11.5837C16.6837 11.8902 17.0419 12.0665 17.4154 12.0665C17.446 12.0665 17.4767 12.0653 17.5075 12.0629C17.9136 12.0313 18.2791 11.7928 18.4851 11.4249L19.8652 8.96079C20.15 8.45237 19.9687 7.80943 19.4603 7.52466Z"/>
+									<path d="M9.21856 4.6172C8.63582 4.6172 8.16765 5.08957 8.16765 5.67231V9.73448C8.16765 10.4617 8.75277 11.0779 9.48937 11.0779H12.4266C13.0094 11.0779 13.4818 10.6097 13.4818 10.027C13.4818 9.44421 13.0094 8.97605 12.4266 8.97605H10.2694V5.67231C10.2695 5.08957 9.80131 4.6172 9.21856 4.6172Z"/>
+								</svg>
+							</div>
+							
 							<div className="Player__duration"><span ref={timeRef}>00:00</span> / { playerState.currentMedia.duration ? timeToFormat(playerState.currentMedia.duration) : '00:00' }</div>
 						</div>
 

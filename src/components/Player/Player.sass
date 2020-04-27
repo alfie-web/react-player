@@ -164,9 +164,9 @@
 		&:last-child
 			margin-right: 0
 
-		&:hover
+		&--active, &:hover
 			svg
-				fill: $violet
+				fill: $violet 
 
 		svg
 			width: 15px
@@ -174,10 +174,17 @@
 			fill: $black
 			transition: fill .2s
 
+		
+
 	&__mute
 		margin-right: 10px
 		svg
 			width: 24px
+
+	&__loop
+		svg
+			width: 19px
+		
 
 	&__fullscreen
 		svg
@@ -274,7 +281,7 @@
 			svg
 				fill: white
 
-			&:hover
+			&:hover, &--active
 				svg
 					fill: $violet
 
