@@ -1,8 +1,26 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { Fragment, useState, useRef, useEffect } from 'react';
 import classNames from 'classnames';
+import Fullscreen from "react-full-screen";
 import './Player.sass';
 
 import { PlayerTitle, Playlist, Volume } from '../';
+import timeToFormat from '../../helpers/timeToFormat';
+
+// Обрабатывать ошибки - (Например если видео не существует и тд)
+
+const PlayIcon = ({isPlaying}) => {
+	return (
+		<Fragment>
+			{ !isPlaying ? <svg viewBox="0 0 16 18" xmlns="http://www.w3.org/2000/svg">
+				<path fillRule="evenodd" clipRule="evenodd" d="M13 8.99994L2.5 2.93777L2.5 15.0621L13 8.99994ZM15.5 9.86597C16.1667 9.48107 16.1667 8.51882 15.5 8.13392L2 0.339689C1.33333 -0.045211 0.500002 0.435916 0.500002 1.20572L0.500001 16.7942C0.500001 17.564 1.33334 18.0451 2 17.6602L15.5 9.86597Z"/>
+			</svg>
+			: <svg viewBox="0 0 15 18" xmlns="http://www.w3.org/2000/svg">
+				<path d="M0 1C0 0.447716 0.447715 0 1 0C1.55228 0 2 0.447715 2 1V17C2 17.5523 1.55228 18 1 18C0.447715 18 0 17.5523 0 17V1Z"/>
+				<path d="M13 1C13 0.447716 13.4477 0 14 0C14.5523 0 15 0.447715 15 1V17C15 17.5523 14.5523 18 14 18C13.4477 18 13 17.5523 13 17V1Z"/>
+			</svg> }
+		</Fragment>
+	)
+}
 
 
 export default function Player({ isAudio, playlist, className }) {
@@ -16,8 +34,9 @@ export default function Player({ isAudio, playlist, className }) {
 		isLooped: false,
 		isEnded: false,
 		// isMuted: false,
-		isFullscreen: false	// Возможно вынесем в отдельный стэйт
+		// isFullscreen: false	// Возможно вынесем в отдельный стэйт
 	})
+	const [isFullscreen, setIsFullscreen] = useState(false);
 
 	const mediaRef = useRef();
 	const timeRef = useRef();
@@ -36,18 +55,7 @@ export default function Player({ isAudio, playlist, className }) {
 	// console.log('RERENDER')
 
 
-	const addNull = num => {
-		return num >= 0 && num <= 9 ? '0' + num : num;
-	}
-	const timeToFormat = duration => {
-		duration = Math.floor(parseInt(duration));
-		var hours = Math.floor(duration / 3600);
-		duration %= 3600;
-		var minutes = Math.floor(duration / 60);
-		var seconds = duration % 60;
-
-		return `${hours !== 0 ? addNull(hours) + ':' : ''}${addNull(minutes)}:${addNull(seconds)}`;
-	}
+	
 
 
 	// Выбираю активный медиафайл
@@ -166,6 +174,7 @@ export default function Player({ isAudio, playlist, className }) {
 
 
 
+
 	// TODO: Если вынесу в отдельный компонент, то можно сделать локальный стейт для громкости
 	// const setVolume = e => {
 	// 	let val = e.target.value;
@@ -231,6 +240,10 @@ export default function Player({ isAudio, playlist, className }) {
 	// TODO: Повыносить всё так же как PlayerTitle
 	return (
 		<div className="Player__container">
+		<Fullscreen
+			enabled={isFullscreen}
+			onChange={isFull => setIsFullscreen(isFull)}
+		>
 			<div className={classNames('Player', className, {'Player--audio': isAudio, 'Player--video': !isAudio})}>
 
 				<PlayerTitle title={playerState.currentMedia.title || 'Название медиа'} />
@@ -239,7 +252,9 @@ export default function Player({ isAudio, playlist, className }) {
 					? <audio ref={mediaRef} src={playerState.currentMedia.url || ''}></audio>
 					: <div className="Player__display">
 						<video ref={mediaRef} src={playerState.currentMedia.url || ''}></video>
-						<div className="Player__overlay"></div>
+						<div onClick={playPause} className={classNames('Player__overlay', { 'Player__overlay--paused': !playerState.isPlaying })}>
+							<span><PlayIcon isPlaying={playerState.isPlaying} /></span>
+						</div>
 					</div>
 				}
 
@@ -263,13 +278,14 @@ export default function Player({ isAudio, playlist, className }) {
 								title={ !playerState.isPlaying ? 'Проигрывать' : 'Остановить' }
 								onClick={playPause}
 							>
-								{ !playerState.isPlaying ? <svg viewBox="0 0 16 18" xmlns="http://www.w3.org/2000/svg">
+								{/* { !playerState.isPlaying ? <svg viewBox="0 0 16 18" xmlns="http://www.w3.org/2000/svg">
 									<path fillRule="evenodd" clipRule="evenodd" d="M13 8.99994L2.5 2.93777L2.5 15.0621L13 8.99994ZM15.5 9.86597C16.1667 9.48107 16.1667 8.51882 15.5 8.13392L2 0.339689C1.33333 -0.045211 0.500002 0.435916 0.500002 1.20572L0.500001 16.7942C0.500001 17.564 1.33334 18.0451 2 17.6602L15.5 9.86597Z"/>
 								</svg>
 								: <svg viewBox="0 0 15 18" xmlns="http://www.w3.org/2000/svg">
 									<path d="M0 1C0 0.447716 0.447715 0 1 0C1.55228 0 2 0.447715 2 1V17C2 17.5523 1.55228 18 1 18C0.447715 18 0 17.5523 0 17V1Z"/>
 									<path d="M13 1C13 0.447716 13.4477 0 14 0C14.5523 0 15 0.447715 15 1V17C15 17.5523 14.5523 18 14 18C13.4477 18 13 17.5523 13 17V1Z"/>
-								</svg> }
+								</svg> } */}
+								<PlayIcon isPlaying={playerState.isPlaying} />
 							</div>
 
 							<div className="Player__prev Player__btn" title="Предыдущий">
@@ -286,22 +302,13 @@ export default function Player({ isAudio, playlist, className }) {
 						</div>
 
 						<div className="Player__controls-right">
-							{/* <div className="Player__mute Player__btn" title="Без звука">
-								<svg viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg">
-									<path d="M9.82842 17.1859C9.58516 17.3264 9.28543 17.3264 9.04213 17.1859L3.72224 14.1469H0.78629C0.352027 14.1469 0 13.7949 0 13.3607V8.64305C0 8.20878 0.352027 7.85676 0.78629 7.85676H3.72224L9.04531 4.81544C9.4224 4.60006 9.90264 4.73113 10.118 5.10817C10.1858 5.2269 10.2215 5.3612 10.2215 5.49793V16.5058C10.2213 16.7864 10.0714 17.0456 9.82842 17.1859ZM8.64901 6.85347L4.32448 9.32554C4.20479 9.394 4.0692 9.4298 3.93136 9.42934H1.57253V12.5745H3.93136C4.06925 12.574 4.20483 12.6098 4.32448 12.6782L8.64901 15.1503V6.85347Z"/>
-									<path d="M13.1929 13.8537C12.9207 14.1914 12.4264 14.2449 12.0882 13.9732C11.7497 13.7012 11.6958 13.2063 11.9678 12.8678C11.9678 12.8678 11.9679 12.8677 11.9679 12.8677C12.781 11.7567 12.781 10.2471 11.9679 9.13606C11.6937 8.79928 11.7446 8.30402 12.0813 8.0299C12.4181 7.75578 12.9134 7.80659 13.1875 8.14337C13.1893 8.14558 13.1911 8.14779 13.1929 8.15005C14.4793 9.83366 14.4793 12.17 13.1929 13.8537Z"/>
-									<path d="M16.338 16.2125C16.0658 16.5503 15.5715 16.6037 15.2333 16.332C14.8948 16.06 14.8409 15.5651 15.113 15.2266C15.113 15.2265 15.113 15.2265 15.113 15.2265C16.9859 12.7214 16.9859 9.28226 15.113 6.77721C14.8389 6.44043 14.8897 5.94517 15.2265 5.67105C15.5633 5.39693 16.0585 5.44774 16.3326 5.78452C16.3344 5.78673 16.3362 5.78894 16.338 5.7912C18.6482 8.88094 18.6482 13.1228 16.338 16.2125Z"/>
-									<path d="M19.483 18.5713C19.2108 18.9091 18.7165 18.9626 18.3783 18.6908C18.0398 18.4188 17.9859 17.9239 18.258 17.5854C18.258 17.5854 18.258 17.5854 18.258 17.5853C21.1767 13.6815 21.1767 8.32209 18.258 4.41837C17.9839 4.08159 18.0347 3.58633 18.3715 3.31221C18.7083 3.03809 19.2035 3.08891 19.4777 3.42568C19.4795 3.4279 19.4812 3.43011 19.483 3.43237C22.8389 7.92081 22.8389 14.083 19.483 18.5713Z"/>
-								</svg>
-							</div> */}
-
 							<Volume
 								mediaRef={mediaRef}
 								startVolume={50}
 							/>
 
-							{ !isAudio && <div className="Player__fullscreen Player__btn" title={ !playerState.isFullscreen ? 'Во весь экран': 'Выйти из полноэкранного режима' }>
-								{ !playerState.isFullscreen ? <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+							{ !isAudio && <div className="Player__fullscreen Player__btn" onClick={() => setIsFullscreen(!isFullscreen)} title={ !isFullscreen ? 'Во весь экран': 'Выйти из полноэкранного режима' }>
+								{ !isFullscreen ? <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
 									<path d="M9.8 6.07967e-06C9.24771 7.03335e-06 8.8 0.447723 8.8 1.00001C8.8 1.55229 9.24772 2.00001 9.8 2.00001L9.8 6.07967e-06ZM13.4 1V0H13.4L13.4 1ZM14 6.2C14 6.75229 14.4477 7.2 15 7.2C15.5523 7.2 16 6.75229 16 6.2H14ZM6.2 16C6.75228 16 7.2 15.5523 7.2 15C7.2 14.4477 6.75229 14 6.2 14L6.2 16ZM2.6 15L2.6 14H2.6L2.6 15ZM1 13.4H0H1ZM2 9.8C2 9.24772 1.55228 8.8 1 8.8C0.447715 8.8 5.96046e-08 9.24772 5.96046e-08 9.8H2ZM9.8 2.00001L13.4 2L13.4 0L9.8 6.07967e-06L9.8 2.00001ZM14 2.6V6.2H16V2.6H14ZM13.4 2C13.7314 2 14 2.26863 14 2.6H16C16 1.16406 14.8359 0 13.4 0V2ZM6.2 14L2.6 14L2.6 16L6.2 16L6.2 14ZM2 13.4L2 9.8H5.96046e-08L0 13.4H2ZM2.6 14C2.26863 14 2 13.7314 2 13.4H0C1.19209e-07 14.8359 1.16406 16 2.6 16L2.6 14Z"/>
 								</svg>
 								: <svg viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
@@ -316,6 +323,8 @@ export default function Player({ isAudio, playlist, className }) {
 
 
 			</div>
+
+			</Fullscreen>
 
 			<Playlist items={playlist} currentMedia={playerState.currentMedia} setCurrentMedia={setCurrentMedia} />
 		</div>

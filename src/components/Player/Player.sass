@@ -24,21 +24,20 @@
 		left: 50%
 		top: 0
 		transform: translateX(-50%)
+		z-index: 7
 
 	&__options
 		position: absolute
 		width: 100%
 		bottom: 0
 		box-sizing: border-box
-
+		z-index: 10
 
 
 	&__volume
 		position: relative
 		display: flex
-		// justify-content: flex-end
 		align-items: center
-		// width: 15%
 
 		.volume-moved
 			position: absolute
@@ -176,7 +175,7 @@
 			transition: fill .2s
 
 	&__mute
-		margin-right: 15px
+		margin-right: 10px
 		svg
 			width: 24px
 
@@ -199,15 +198,57 @@
 		display: flex
 		// min-height: 600px
 		min-height: 300px
-		max-height: 670px
+		max-height: 1000px
 		background-color: $black
 		video
 			width: 100%
 			// min-height: 600px
 			min-height: 300px
-			max-height: 670px
+			max-height: 1000px
 
 
+	&__overlay, &__overlay span
+		position: absolute
+		display: flex
+		justify-content: center
+		align-items: center
+
+	&__overlay
+		top: 0
+		bottom: 0
+		left: 0
+		right: 0
+		z-index: 5
+		background-color: rgba(11, 15, 30, .7)
+		opacity: 0
+		transition: opacity .2s
+
+		span
+			pointer-events: none
+			
+			z-index: 6
+			&::after
+				position: absolute
+				content: ''
+				width: 96px
+				height: 96px
+				border-radius: 50%
+				border: 2px solid rgba(255, 255, 255, .1)
+				transform: scale(1.5)
+				transition: transform .2s
+
+			svg
+				width: 25px
+				height: auto
+				fill: white
+				margin-right: -5px 
+
+
+		&--paused
+			opacity: 1
+			span
+				&::after
+					transform: scale(1)
 
 
 

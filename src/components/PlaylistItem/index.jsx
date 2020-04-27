@@ -1,13 +1,15 @@
 import React from 'react';
 import classNames from 'classnames';
 
+import timeToFormat from '../../helpers/timeToFormat';
+
 export default function PlaylistItem({ item, num, currentMedia, setCurrentMedia }) {
 	const { _id, title, url, duration } = item;
 	return (
 		<div 
 			key={_id}
 			className={classNames('Playlist__item', { 'Playlist__item--active': currentMedia._id && currentMedia._id === _id })} 
-			onClick={() => setCurrentMedia(item)}
+			onClick={() => currentMedia._id !== _id && setCurrentMedia(item)}
 		>
 			<div className="Playlist__item-left">
 				<span>
@@ -27,7 +29,7 @@ export default function PlaylistItem({ item, num, currentMedia, setCurrentMedia 
 					</svg>
 					</a>
 				</div>
-				{duration}
+				{timeToFormat(duration)}
 			</div>
 		</div>
 	)
