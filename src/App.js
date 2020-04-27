@@ -6,13 +6,20 @@ import Player from './components/Player';
 const MOCKVIDEO = [
 	{
 		_id: '1',
+		url: 'https://res.cloudinary.com/dkbqvhh7f/video/upload/v1587982679/player/Portugal_The_Man_-_Feel_It_Still_Lyrics_egczjs.mp4',
+		title: 'Portugal The Man - Feel it still',
+		duration: 166,
+		poster: ''
+	},
+	{
+		_id: '2',
 		url: 'https://res.cloudinary.com/dkbqvhh7f/video/upload/v1587624470/player/bg_jtawby.mp4',
 		title: 'Промо ролик какой-то',
 		duration: 133,
 		poster: ''
 	},
 	{
-		_id: '2',
+		_id: '3',
 		url: 'https://res.cloudinary.com/dkbqvhh7f/video/upload/v1587623677/player/Detroit-_Become_Human_Markus_final_song_Everything_will_be_alright_cbzztz.mp4',
 		title: 'Everything will be allright',
 		duration: 172,

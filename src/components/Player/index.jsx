@@ -7,6 +7,7 @@ import { PlayerTitle, Playlist, Volume } from '../';
 import timeToFormat from '../../helpers/timeToFormat';
 
 // Обрабатывать ошибки - (Например если видео не существует и тд)
+// TODO: Сделать спрайт из иконок и компонент PlayerIcon
 
 const PlayIcon = ({isPlaying}) => {
 	return (
@@ -26,7 +27,6 @@ const PlayIcon = ({isPlaying}) => {
 export default function Player({ isAudio, playlist, className }) {
 	const [playerState, setPlayerState] = useState({
 		currentMedia: playlist[0] || {},	// Возможно придется отделить эту штуку в отдельный useState
-		// currentDuration: null,
 		currentVolume: 1,
 
 		isLoaded: false,
@@ -68,6 +68,32 @@ export default function Player({ isAudio, playlist, className }) {
 		console.log('LOADED')
 	}
 
+	// const prevNextHandler = way => {
+	// 	const curIndex = playlist.findIndex((el) => el._id === playerState.currentMedia._id);
+
+	// 	if (way === 'next') {
+	// 		if (curIndex + 1 !== playlist.length - 1) {
+	// 			return setCurrentMedia(playlist[0]);
+	// 		}
+	// 		setCurrentMedia(playlist[curIndex + 1]);
+	// 	} else if (way === 'prev') {
+
+	// 	}
+	// }
+
+
+	const prevNextHandler = way => {
+		const curIndex = playlist.findIndex((el) => el._id === playerState.currentMedia._id);
+
+		if (curIndex + way > playlist.length - 1) {
+			return setCurrentMedia(playlist[0]);
+		} else if (curIndex + way < 0) {
+			setCurrentMedia(playlist[playlist.length - 1]);
+		} else {
+			setCurrentMedia(playlist[curIndex + way]);
+		}
+	}
+
 
 	const setWaiting = () => {
 		console.log('WAITING')
@@ -107,7 +133,7 @@ export default function Player({ isAudio, playlist, className }) {
 		}
 	}
 
-	const playPause = () => {
+	const playPauseHandler = () => {
 		if (playerState.isPlaying) {
 			pause();
 		} else {
@@ -252,7 +278,7 @@ export default function Player({ isAudio, playlist, className }) {
 					? <audio ref={mediaRef} src={playerState.currentMedia.url || ''}></audio>
 					: <div className="Player__display">
 						<video ref={mediaRef} src={playerState.currentMedia.url || ''}></video>
-						<div onClick={playPause} className={classNames('Player__overlay', { 'Player__overlay--paused': !playerState.isPlaying })}>
+						<div onClick={playPauseHandler} className={classNames('Player__overlay', { 'Player__overlay--paused': !playerState.isPlaying })}>
 							<span><PlayIcon isPlaying={playerState.isPlaying} /></span>
 						</div>
 					</div>
@@ -276,24 +302,17 @@ export default function Player({ isAudio, playlist, className }) {
 							<div 
 								className="Player__play Player__btn" 
 								title={ !playerState.isPlaying ? 'Проигрывать' : 'Остановить' }
-								onClick={playPause}
+								onClick={playPauseHandler}
 							>
-								{/* { !playerState.isPlaying ? <svg viewBox="0 0 16 18" xmlns="http://www.w3.org/2000/svg">
-									<path fillRule="evenodd" clipRule="evenodd" d="M13 8.99994L2.5 2.93777L2.5 15.0621L13 8.99994ZM15.5 9.86597C16.1667 9.48107 16.1667 8.51882 15.5 8.13392L2 0.339689C1.33333 -0.045211 0.500002 0.435916 0.500002 1.20572L0.500001 16.7942C0.500001 17.564 1.33334 18.0451 2 17.6602L15.5 9.86597Z"/>
-								</svg>
-								: <svg viewBox="0 0 15 18" xmlns="http://www.w3.org/2000/svg">
-									<path d="M0 1C0 0.447716 0.447715 0 1 0C1.55228 0 2 0.447715 2 1V17C2 17.5523 1.55228 18 1 18C0.447715 18 0 17.5523 0 17V1Z"/>
-									<path d="M13 1C13 0.447716 13.4477 0 14 0C14.5523 0 15 0.447715 15 1V17C15 17.5523 14.5523 18 14 18C13.4477 18 13 17.5523 13 17V1Z"/>
-								</svg> } */}
 								<PlayIcon isPlaying={playerState.isPlaying} />
 							</div>
 
-							<div className="Player__prev Player__btn" title="Предыдущий">
+							<div className="Player__prev Player__btn" title="Предыдущий" onClick={() => prevNextHandler(-1)}>
 								<svg viewBox="0 0 15 16" xmlns="http://www.w3.org/2000/svg">
 									<path fillRule="evenodd" clipRule="evenodd" d="M0 1.05555C0 1.05555 0 1.05555 0 1.05555C7.08679e-07 0.595313 0.373096 0.222215 0.833333 0.222215C1.29357 0.222215 1.66667 0.595311 1.66667 1.05555V7.03774L13.5 0.205764C14.1667 -0.179137 15 0.301989 15 1.07179L15 14.9282C15 15.698 14.1667 16.1791 13.5 15.7942L1.66667 8.96224V14.9444C1.66667 15.4047 1.29357 15.7778 0.833333 15.7778C0.373096 15.7778 0 15.4047 0 14.9444V1.05555ZM4 7.99999L13 13.1961L13 2.80384L4 7.99999Z"/>
 								</svg>
 							</div>
-							<div className="Player__next Player__btn" title="Следующий">
+							<div className="Player__next Player__btn" title="Следующий" onClick={() => prevNextHandler(1)}>
 								<svg viewBox="0 0 15 16" xmlns="http://www.w3.org/2000/svg">
 									<path fillRule="evenodd" clipRule="evenodd" d="M13.3333 7.03774V1.05555C13.3333 0.595311 13.7064 0.222215 14.1667 0.222215C14.6269 0.222215 15 0.595312 15 1.05555V14.9444C15 15.4047 14.6269 15.7778 14.1667 15.7778C13.7064 15.7778 13.3333 15.4047 13.3333 14.9444V8.96224L1.5 15.7942C0.833334 16.1791 0 15.698 0 14.9282V1.07179C0 0.301989 0.833334 -0.179137 1.5 0.205764L13.3333 7.03774ZM11 7.99999L2 2.80384L2 13.1961L11 7.99999Z"/>
 								</svg>
