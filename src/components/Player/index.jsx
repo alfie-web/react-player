@@ -2,12 +2,12 @@ import React, { useState, useRef, useEffect } from 'react';
 import classNames from 'classnames';
 import './Player.sass';
 
-import { PlayerTitle, Playlist } from '../';
+import { PlayerTitle, Playlist, Volume } from '../';
 
 
 export default function Player({ isAudio, playlist, className }) {
 	const [playerState, setPlayerState] = useState({
-		currentMedia: {},	// Возможно придется отделить эту штуку в отдельный useState
+		currentMedia: playlist[0] || {},	// Возможно придется отделить эту штуку в отдельный useState
 		// currentDuration: null,
 		currentVolume: 1,
 
@@ -15,7 +15,7 @@ export default function Player({ isAudio, playlist, className }) {
 		isPlaying: false,
 		isLooped: false,
 		isEnded: false,
-		isMuted: false,
+		// isMuted: false,
 		isFullscreen: false	// Возможно вынесем в отдельный стэйт
 	})
 
@@ -166,6 +166,16 @@ export default function Player({ isAudio, playlist, className }) {
 
 
 
+	// TODO: Если вынесу в отдельный компонент, то можно сделать локальный стейт для громкости
+	// const setVolume = e => {
+	// 	let val = e.target.value;
+	// 	console.log(val);
+	// }
+
+
+
+
+
 
 
 	useEffect(() => {
@@ -238,7 +248,8 @@ export default function Player({ isAudio, playlist, className }) {
 				<div className="Player__options">
 					<div className="Player__range">
 						<div ref={hintRef} className="time-hint"></div>
-						<div className="range" ref={barRef}>
+						{/* TODO: Может без рефов обойтись, просто на onClick вешать */}
+						<div className="range" ref={barRef}>		
 							<div className={classNames('bar', { 'bar--waiting': !playerState.isLoaded })}></div>
 							<div ref={progressRef} className="progress"></div>
 							<div ref={loadRef} className="load"></div>
@@ -271,23 +282,23 @@ export default function Player({ isAudio, playlist, className }) {
 									<path fillRule="evenodd" clipRule="evenodd" d="M13.3333 7.03774V1.05555C13.3333 0.595311 13.7064 0.222215 14.1667 0.222215C14.6269 0.222215 15 0.595312 15 1.05555V14.9444C15 15.4047 14.6269 15.7778 14.1667 15.7778C13.7064 15.7778 13.3333 15.4047 13.3333 14.9444V8.96224L1.5 15.7942C0.833334 16.1791 0 15.698 0 14.9282V1.07179C0 0.301989 0.833334 -0.179137 1.5 0.205764L13.3333 7.03774ZM11 7.99999L2 2.80384L2 13.1961L11 7.99999Z"/>
 								</svg>
 							</div>
-							<div className="Player__duration"><span ref={timeRef}>00:00</span>/{ playerState.currentMedia.duration ? timeToFormat(playerState.currentMedia.duration) : '00:00' }</div>
+							<div className="Player__duration"><span ref={timeRef}>00:00</span> / { playerState.currentMedia.duration ? timeToFormat(playerState.currentMedia.duration) : '00:00' }</div>
 						</div>
 
 						<div className="Player__controls-right">
-							<div className="Player__mute Player__btn" title="Без звука">
+							{/* <div className="Player__mute Player__btn" title="Без звука">
 								<svg viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg">
 									<path d="M9.82842 17.1859C9.58516 17.3264 9.28543 17.3264 9.04213 17.1859L3.72224 14.1469H0.78629C0.352027 14.1469 0 13.7949 0 13.3607V8.64305C0 8.20878 0.352027 7.85676 0.78629 7.85676H3.72224L9.04531 4.81544C9.4224 4.60006 9.90264 4.73113 10.118 5.10817C10.1858 5.2269 10.2215 5.3612 10.2215 5.49793V16.5058C10.2213 16.7864 10.0714 17.0456 9.82842 17.1859ZM8.64901 6.85347L4.32448 9.32554C4.20479 9.394 4.0692 9.4298 3.93136 9.42934H1.57253V12.5745H3.93136C4.06925 12.574 4.20483 12.6098 4.32448 12.6782L8.64901 15.1503V6.85347Z"/>
 									<path d="M13.1929 13.8537C12.9207 14.1914 12.4264 14.2449 12.0882 13.9732C11.7497 13.7012 11.6958 13.2063 11.9678 12.8678C11.9678 12.8678 11.9679 12.8677 11.9679 12.8677C12.781 11.7567 12.781 10.2471 11.9679 9.13606C11.6937 8.79928 11.7446 8.30402 12.0813 8.0299C12.4181 7.75578 12.9134 7.80659 13.1875 8.14337C13.1893 8.14558 13.1911 8.14779 13.1929 8.15005C14.4793 9.83366 14.4793 12.17 13.1929 13.8537Z"/>
 									<path d="M16.338 16.2125C16.0658 16.5503 15.5715 16.6037 15.2333 16.332C14.8948 16.06 14.8409 15.5651 15.113 15.2266C15.113 15.2265 15.113 15.2265 15.113 15.2265C16.9859 12.7214 16.9859 9.28226 15.113 6.77721C14.8389 6.44043 14.8897 5.94517 15.2265 5.67105C15.5633 5.39693 16.0585 5.44774 16.3326 5.78452C16.3344 5.78673 16.3362 5.78894 16.338 5.7912C18.6482 8.88094 18.6482 13.1228 16.338 16.2125Z"/>
 									<path d="M19.483 18.5713C19.2108 18.9091 18.7165 18.9626 18.3783 18.6908C18.0398 18.4188 17.9859 17.9239 18.258 17.5854C18.258 17.5854 18.258 17.5854 18.258 17.5853C21.1767 13.6815 21.1767 8.32209 18.258 4.41837C17.9839 4.08159 18.0347 3.58633 18.3715 3.31221C18.7083 3.03809 19.2035 3.08891 19.4777 3.42568C19.4795 3.4279 19.4812 3.43011 19.483 3.43237C22.8389 7.92081 22.8389 14.083 19.483 18.5713Z"/>
 								</svg>
-							</div>
-							<div className="Player__volume">
-								<span className="volume-moved"></span>
-								{/* <input className="volume" type="range" min="0" max="100" value="100" /> */}
-								<input className="volume" type="range" min="0" max="100" />
-							</div>
+							</div> */}
+
+							<Volume
+								mediaRef={mediaRef}
+								startVolume={50}
+							/>
 
 							{ !isAudio && <div className="Player__fullscreen Player__btn" title={ !playerState.isFullscreen ? 'Во весь экран': 'Выйти из полноэкранного режима' }>
 								{ !playerState.isFullscreen ? <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
