@@ -7,7 +7,7 @@ const MOCKVIDEO = [
 	{
 		_id: '1',
 		url: 'https://res.cloudinary.com/dkbqvhh7f/video/upload/v1587982679/player/Portugal_The_Man_-_Feel_It_Still_Lyrics_egczjs.mp4',
-		title: 'Portugal The Man - Feel it still',
+		title: 'Portugal. The Man - Feel it still',
 		duration: 166,
 		poster: ''
 	},
@@ -49,6 +49,18 @@ function App() {
 		<div className="App">
 			<Player 
 				playlist={MOCKVIDEO}
+				hotKeys={{		// Желательно чтобы если мы используем 2 плеера, клавиши не пересекались, так как они будут срабатывать для всех плееров // Хотя по идее надо просто как-то проверять над каким плеером фокус
+					playPause: 32,	// Пробел
+					mute: 77,	// M
+					loop: 76, 	// L
+					fullscreen: 70, 	// F
+					volumeUp: 78,	// N
+					volumeDown: 66,		// B
+					next: 86, 	// V
+					prev: 67,	// C
+					rewindForward: 39, 	// ArrowRight
+					rewindBack: 37, 	// ArrowLeft
+				}}
 			/>
 			{/* <Player 
 				isAudio
